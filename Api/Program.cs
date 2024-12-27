@@ -1,17 +1,62 @@
-using NSwag.AspNetCore;
-using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using TemplateProject.Models;
+using TemplateProject.Repositories;
+using TemplateProject.Services;
+using TemplateProject.Settings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<TodoDb>(opt => opt.UseInMemoryDatabase("TodoList"));
+builder.Services.AddHttpClient();
+builder.Services.AddDbContext<TemplateProjectDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(config =>
 {
-    config.DocumentName = "TodoAPI";
-    config.Title = "TodoAPI v1";
+    config.DocumentName = "TemplateProjectAPI";
+    config.Title = "TemplateProjectAPI v1";
     config.Version = "v1";
 });
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.File("logs.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Authorisation-------------------
+
+builder.Services.AddSingleton<TokenService>();
+var secretKey = ApiSettings.GenerateSecretByte();
+
+builder.Services.AddAuthentication(config =>
+{
+    config.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(config =>
+{
+    config.RequireHttpsMetadata = false;
+    config.SaveToken = true;
+    config.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("manager", policy => policy.RequireRole("manager"));
+    options.AddPolicy("operator", policy => policy.RequireRole("operator"));
+});
+
+// dotnet user-jwts create --scope "greetings_api" --role "admin"
+// Authorisation-------------------
 
 //CORS-----------------------------
 var specificOrgins = "AppOrigins";
@@ -22,7 +67,7 @@ builder.Services.AddCors(options =>
                         policy =>
                         {
                             policy.WithOrigins("http://localhost:5173");
-                            policy.WithMethods(["GET","POST","PUT","DELETE"]);
+                            policy.WithMethods(["GET", "POST", "PUT", "DELETE"]);
                             policy.WithHeaders(["Content-Type"]);
                         });
 });
@@ -30,88 +75,83 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
- //CORS-----------------------------
+//CORS-----------------------------
 app.UseCors(specificOrgins);
 //CORS-----------------------------
+
+// Authorisation-------------------
+app.UseAuthentication();
+app.UseAuthorization();
+// Authorisation-------------------
 
 if (app.Environment.IsDevelopment())
 {
     app.UseOpenApi();
     app.UseSwaggerUi(config =>
     {
-        config.DocumentTitle = "TodoAPI";
+        config.DocumentTitle = "TemplateProjectAPI";
         config.Path = "/swagger";
         config.DocumentPath = "/swagger/{documentName}/swagger.json";
         config.DocExpansion = "list";
     });
 }
 
-RouteGroupBuilder todoItems = app.MapGroup("/todoitems");
+RouteGroupBuilder manufacturers = app.MapGroup("/manufacturers");
 
-todoItems.MapGet("/", GetAllTodos);
-todoItems.MapGet("/complete", GetCompleteTodos);
-todoItems.MapGet("/{id}", GetTodo);
-todoItems.MapPost("/", CreateTodo);
-todoItems.MapPut("/{id}", UpdateTodo);
-todoItems.MapDelete("/{id}", DeleteTodo);
+manufacturers.MapGet("/", GetManufacturers).RequireAuthorization();
+
+app.MapGet("/hello", () => "Hello world!")
+  .RequireAuthorization("admin_greetings");
+
+app.MapPost("/register", async (RegisterUser userModel, TokenService service) =>
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<TemplateProjectDbContext>();
+    var userRep = new UserRepository(dbContext);
+    var userService = new UserService(userRep);
+
+    var user = await userService.Register(userModel);
+
+    if (user is null)
+        return Results.NotFound(new { message = "Invalid username or password" });
+
+    var token = service.GenerateToken(user);
+    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email, user.UserAccess?.ToList());
+
+    return Results.Ok(new { userDto, token });
+});
+
+app.MapPost("/login", async (LoginUser userModel, TokenService service) =>
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<TemplateProjectDbContext>();
+    var userRep = new UserRepository(dbContext);
+    var userService = new UserService(userRep);
+    var user = await userService.Authenticate(userModel.Username, userModel.Password);
+
+    if (user is null)
+        return Results.NotFound(new { message = "Invalid username or password" });
+
+    var token = service.GenerateToken(user);
+    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email, user.UserAccess?.ToList());
+
+    return Results.Ok(new { userDto, token });
+});
+
+app.MapGet("/operator", (ClaimsPrincipal user) =>
+{
+    Results.Ok(new { message = $"Authenticated as {user?.Identity?.Name}" });
+}).RequireAuthorization("Operator");
+
+app.MapGet("/manager", (ClaimsPrincipal user) =>
+{
+    Results.Ok(new { message = $"Authenticated as {user?.Identity?.Name}" });
+}).RequireAuthorization("Manager");
 
 app.Run();
 
-static async Task<IResult> GetAllTodos(TodoDb db)
+static async Task<IResult> GetManufacturers()
 {
-    return TypedResults.Ok(await db.Todos.Select(x => new TodoItemDTO(x)).ToArrayAsync());
-}
-
-static async Task<IResult> GetCompleteTodos(TodoDb db) {
-    return TypedResults.Ok(await db.Todos.Where(t => t.IsComplete).Select(x => new TodoItemDTO(x)).ToListAsync());
-}
-
-static async Task<IResult> GetTodo(int id, TodoDb db)
-{
-    return await db.Todos.FindAsync(id)
-        is Todo todo
-            ? TypedResults.Ok(new TodoItemDTO(todo))
-            : TypedResults.NotFound();
-}
-
-static async Task<IResult> CreateTodo(TodoItemDTO todoItemDTO, TodoDb db)
-{
-    var todoItem = new Todo
-    {
-        IsComplete = todoItemDTO.IsComplete,
-        Name = todoItemDTO.Name
-    };
-
-    db.Todos.Add(todoItem);
-    await db.SaveChangesAsync();
-
-    todoItemDTO = new TodoItemDTO(todoItem);
-
-    return TypedResults.Created($"/todoitems/{todoItem.Id}", todoItemDTO);
-}
-
-static async Task<IResult> UpdateTodo(int id, TodoItemDTO todoItemDTO, TodoDb db)
-{
-    var todo = await db.Todos.FindAsync(id);
-
-    if (todo is null) return TypedResults.NotFound();
-
-    todo.Name = todoItemDTO.Name;
-    todo.IsComplete = todoItemDTO.IsComplete;
-
-    await db.SaveChangesAsync();
-
-    return TypedResults.NoContent();
-}
-
-static async Task<IResult> DeleteTodo(int id, TodoDb db)
-{
-    if (await db.Todos.FindAsync(id) is Todo todo)
-    {
-        db.Todos.Remove(todo);
-        await db.SaveChangesAsync();
-        return TypedResults.NoContent();
-    }
-
-    return TypedResults.NotFound();
+    //var data = await ManufacturerDal.GetManufacturers();
+    return TypedResults.Ok();
 }

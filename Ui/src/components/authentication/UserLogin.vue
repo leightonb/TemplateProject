@@ -1,22 +1,6 @@
 <script setup lang="ts">
-import WelcomeItem from './WelcomeItem.vue'
-import DocumentationIcon from './icons/IconDocumentation.vue'
-import ToolingIcon from './icons/IconTooling.vue'
-import EcosystemIcon from './icons/IconEcosystem.vue'
-import CommunityIcon from './icons/IconCommunity.vue'
-import SupportIcon from './icons/IconSupport.vue'
-import { useUserStore } from '@/stores/user'
-
 import { ref } from 'vue'
 const todos = ref([])
-const userStore = useUserStore()
-function getTodoItems() {
-  fetch('http://localho.st:5171/todoitems')
-    .then((response) => response.json())
-    .then((data) => {
-      todos.value = data
-    })
-}
 
 async function login() {
   const rawResponse = await fetch('http://localho.st:5171/login', {
@@ -26,17 +10,14 @@ async function login() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      username: 'lb12',
+      username: 'lb2',
       password: 'lb'
     })
   })
-  const json = await rawResponse.json()
-  userStore.setUser(json.userDto)
-  userStore.setToken(json.token)
 }
 
 function logItems() {
-  console.log(userStore.getUser(), userStore.getToken())
+  console.log(todos.value)
 }
 </script>
 
@@ -69,7 +50,6 @@ function logItems() {
       >Cypress Component Testing</a
     >.
     <button @click="login">Login</button>
-    <button @click="getTodoItems">Get Items</button>
     <button @click="logItems">Log Items</button>
     <br />
 
