@@ -1,10 +1,10 @@
+using Api.Tests.WebMinRouteGroup;
+using Api.Tests.WebMinRouteGroup.Data;
+using Api.Tests.WebMinRouteGroup.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Moq;
-using WebMinRouteGroup;
-using WebMinRouteGroup.Data;
-using WebMinRouteGroup.Services;
 
-namespace UnitTests;
+namespace Api.Tests.UnitTests;
 
 public class TodoMoqTests
 {
@@ -15,13 +15,13 @@ public class TodoMoqTests
         var mock = new Mock<ITodoService>();
 
         mock.Setup(m => m.Find(It.Is<int>(id => id == 1)))
-            .ReturnsAsync((Todo?)null);
+            .ReturnsAsync((Api.Tests.WebMinRouteGroup.Data.Todo?)null);
 
         // Act
         var result = await TodoEndpointsV2.GetTodo(1, mock.Object);
 
         //Assert
-        Assert.IsType<Results<Ok<Todo>, NotFound>>(result);
+        Assert.IsType<Results<Ok<Api.Tests.WebMinRouteGroup.Data.Todo>, NotFound>>(result);
 
         var notFoundResult = (NotFound) result.Result;
 
@@ -35,14 +35,14 @@ public class TodoMoqTests
         var mock = new Mock<ITodoService>();
 
         mock.Setup(m => m.GetAll())
-            .ReturnsAsync(new List<Todo> {
-                new Todo
+            .ReturnsAsync(new List<Api.Tests.WebMinRouteGroup.Data.Todo> {
+                new Api.Tests.WebMinRouteGroup.Data.Todo
                 {
                     Id = 1,
                     Title = "Test title 1",
                     IsDone = false
                 },
-                new Todo
+                new Api.Tests.WebMinRouteGroup.Data.Todo
                 {
                     Id = 2,
                     Title = "Test title 2",
@@ -78,14 +78,14 @@ public class TodoMoqTests
         var mock = new Mock<ITodoService>();
 
         mock.Setup(m => m.GetIncompleteTodos())
-            .ReturnsAsync(new List<Todo> {
-                new Todo
+            .ReturnsAsync(new List<Api.Tests.WebMinRouteGroup.Data.Todo> {
+                new Api.Tests.WebMinRouteGroup.Data.Todo
                 {
                     Id = 1,
                     Title = "Test title 1",
                     IsDone = false
                 },
-                new Todo
+                new Api.Tests.WebMinRouteGroup.Data.Todo
                 {
                     Id = 2,
                     Title = "Test title 2",
@@ -121,7 +121,7 @@ public class TodoMoqTests
         var mock = new Mock<ITodoService>();
 
         mock.Setup(m => m.Find(It.Is<int>(id => id == 1)))
-            .ReturnsAsync(new Todo
+            .ReturnsAsync(new Api.Tests.WebMinRouteGroup.Data.Todo
             {
                 Id = 1,
                 Title = "Test title",
@@ -144,7 +144,7 @@ public class TodoMoqTests
     public async Task CreateTodoCreatesTodoInDatabase()
     {
         //Arrange
-        var todos = new List<Todo>();
+        var todos = new List<Api.Tests.WebMinRouteGroup.Data.Todo>();
 
         var newTodo = new TodoDto
         {
@@ -155,8 +155,8 @@ public class TodoMoqTests
 
         var mock = new Mock<ITodoService>();
 
-        mock.Setup(m => m.Add(It.Is<Todo>(t => t.Title == newTodo.Title && t.Description == newTodo.Description && t.IsDone == newTodo.IsDone)))
-            .Callback<Todo>(todo => todos.Add(todo))
+        mock.Setup(m => m.Add(It.Is<Api.Tests.WebMinRouteGroup.Data.Todo>(t => t.Title == newTodo.Title && t.Description == newTodo.Description && t.IsDone == newTodo.IsDone)))
+            .Callback<Api.Tests.WebMinRouteGroup.Data.Todo>(todo => todos.Add(todo))
             .Returns(Task.CompletedTask);
 
         //Act
@@ -181,14 +181,14 @@ public class TodoMoqTests
     public async Task UpdateTodoUpdatesTodoInDatabase()
     {
         //Arrange
-        var existingTodo = new Todo
+        var existingTodo = new Api.Tests.WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Exiting test title",
             IsDone = false
         };
 
-        var updatedTodo = new Todo
+        var updatedTodo = new Api.Tests.WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Updated test title",
@@ -200,8 +200,8 @@ public class TodoMoqTests
         mock.Setup(m => m.Find(It.Is<int>(id => id == 1)))
             .ReturnsAsync(existingTodo);
 
-        mock.Setup(m => m.Update(It.Is<Todo>(t => t.Id == updatedTodo.Id && t.Description == updatedTodo.Description && t.IsDone == updatedTodo.IsDone)))
-            .Callback<Todo>(todo => existingTodo = todo)
+        mock.Setup(m => m.Update(It.Is<Api.Tests.WebMinRouteGroup.Data.Todo>(t => t.Id == updatedTodo.Id && t.Description == updatedTodo.Description && t.IsDone == updatedTodo.IsDone)))
+            .Callback<Api.Tests.WebMinRouteGroup.Data.Todo>(todo => existingTodo = todo)
             .Returns(Task.CompletedTask);
 
         //Act
@@ -223,22 +223,22 @@ public class TodoMoqTests
     public async Task DeleteTodoDeletesTodoInDatabase()
     {
         //Arrange
-        var existingTodo = new Todo
+        var existingTodo = new Api.Tests.WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Test title 1",
             IsDone = false
         };
 
-        var todos = new List<Todo> { existingTodo };
+        var todos = new List<Api.Tests.WebMinRouteGroup.Data.Todo> { existingTodo };
 
         var mock = new Mock<ITodoService>();
 
         mock.Setup(m => m.Find(It.Is<int>(id => id == existingTodo.Id)))
             .ReturnsAsync(existingTodo);
 
-        mock.Setup(m => m.Remove(It.Is<Todo>(t => t.Id == 1)))
-            .Callback<Todo>(t => todos.Remove(t))
+        mock.Setup(m => m.Remove(It.Is<Api.Tests.WebMinRouteGroup.Data.Todo>(t => t.Id == 1)))
+            .Callback<Api.Tests.WebMinRouteGroup.Data.Todo>(t => todos.Remove(t))
             .Returns(Task.CompletedTask);
 
         //Act

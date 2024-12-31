@@ -1,4 +1,4 @@
-namespace WebMinRouteGroup.Services;
+namespace Api.Tests.WebMinRouteGroup.Services;
 
 public class EmailService : IEmailService
 {

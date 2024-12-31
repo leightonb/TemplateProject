@@ -11,7 +11,7 @@ import { ref } from 'vue'
 const todos = ref([])
 const userStore = useUserStore()
 function getTodoItems() {
-  fetch('http://localho.st:5171/todoitems')
+  fetch('http://localhost:5171/todoitems')
     .then((response) => response.json())
     .then((data) => {
       todos.value = data
@@ -19,7 +19,7 @@ function getTodoItems() {
 }
 
 async function login() {
-  const rawResponse = await fetch('http://localho.st:5171/login', {
+  const rawResponse = await fetch('http://localhost:5171/login', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

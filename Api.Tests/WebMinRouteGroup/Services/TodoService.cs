@@ -1,51 +1,42 @@
+using Api.Tests.WebMinRouteGroup.Data;
 using Microsoft.EntityFrameworkCore;
-using WebMinRouteGroup.Data;
 
-namespace WebMinRouteGroup.Services;
+namespace Api.Tests.WebMinRouteGroup.Services;
 
-public class TodoService : ITodoService
+public class TodoService(TodoGroupDbContext dbContext, IEmailService emailService) : ITodoService
 {
-    private readonly TodoGroupDbContext _dbContext;
-    private readonly IEmailService _emailService;
-
-    public TodoService(TodoGroupDbContext dbContext, IEmailService emailService)
+    public async ValueTask<Data.Todo?> Find(int id)
     {
-        _dbContext = dbContext;
-        _emailService = emailService;
+        return await dbContext.Todos.FindAsync(id);
     }
 
-    public async ValueTask<Todo?> Find(int id)
+    public async Task<List<Data.Todo>> GetAll()
     {
-        return await _dbContext.Todos.FindAsync(id);
+        return await dbContext.Todos.ToListAsync();
     }
 
-    public async Task<List<Todo>> GetAll()
+    public async Task Add(Data.Todo todo)
     {
-        return await _dbContext.Todos.ToListAsync();
+        await dbContext.Todos.AddAsync(todo);
+
+        if (await dbContext.SaveChangesAsync() > 0)
+            await emailService.Send("hello@microsoft.com", $"New todo has been added: {todo.Title}");
     }
 
-    public async Task Add(Todo todo)
+    public async Task Update(Data.Todo todo)
     {
-        await _dbContext.Todos.AddAsync(todo);
-
-        if (await _dbContext.SaveChangesAsync() > 0)
-            await _emailService.Send("hello@microsoft.com", $"New todo has been added: {todo.Title}");
+        dbContext.Todos.Update(todo);
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task Update(Todo todo)
+    public async Task Remove(Data.Todo todo)
     {
-        _dbContext.Todos.Update(todo);
-        await _dbContext.SaveChangesAsync();
+        dbContext.Todos.Remove(todo);
+        await dbContext.SaveChangesAsync();
     }
 
-    public async Task Remove(Todo todo)
+    public Task<List<Data.Todo>> GetIncompleteTodos()
     {
-        _dbContext.Todos.Remove(todo);
-        await _dbContext.SaveChangesAsync();
-    }
-
-    public Task<List<Todo>> GetIncompleteTodos()
-    {
-        return _dbContext.Todos.Where(t => t.IsDone == false).ToListAsync();
+        return dbContext.Todos.Where(t => t.IsDone == false).ToListAsync();
     }
 }

@@ -1,10 +1,10 @@
+using Api.Tests.WebMinRouteGroup.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using WebMinRouteGroup.Data;
 
-namespace IntegrationTests.Helpers;
+namespace Api.Tests.IntegrationTests.Helpers;
 
 public class TestWebApplicationFactory<TProgram>
     : WebApplicationFactory<TProgram> where TProgram : class

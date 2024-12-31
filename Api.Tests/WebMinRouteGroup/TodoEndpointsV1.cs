@@ -1,8 +1,11 @@
+using Api.Tests.WebMinRouteGroup.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
-using WebMinRouteGroup.Data;
 
-namespace WebMinRouteGroup;
+namespace Api.Tests.WebMinRouteGroup;
 
 public static class TodoEndpointsV1
 {
@@ -33,7 +36,7 @@ public static class TodoEndpointsV1
 
     // get all todos
     // <snippet_1>
-    public static async Task<Ok<Todo[]>> GetAllTodos(TodoGroupDbContext database)
+    public static async Task<Ok<Api.Tests.WebMinRouteGroup.Data.Todo[]>> GetAllTodos(TodoGroupDbContext database)
     {
         var todos = await database.Todos.ToArrayAsync();
         return TypedResults.Ok(todos);
@@ -41,7 +44,7 @@ public static class TodoEndpointsV1
     // </snippet_1>
 
     // get todo by id
-    public static async Task<Results<Ok<Todo>, NotFound>> GetTodo(int id, TodoGroupDbContext database)
+    public static async Task<Results<Ok<Api.Tests.WebMinRouteGroup.Data.Todo>, NotFound>> GetTodo(int id, TodoGroupDbContext database)
     {
         var todo = await database.Todos.FindAsync(id);
 
@@ -54,9 +57,9 @@ public static class TodoEndpointsV1
     }
 
     // create todo
-    public static async Task<Created<Todo>> CreateTodo(TodoDto todo, TodoGroupDbContext database)
+    public static async Task<Created<Api.Tests.WebMinRouteGroup.Data.Todo>> CreateTodo(TodoDto todo, TodoGroupDbContext database)
     {
-        var newTodo = new Todo
+        var newTodo = new Api.Tests.WebMinRouteGroup.Data.Todo
         {
             Title = todo.Title,
             Description = todo.Description,
@@ -70,7 +73,7 @@ public static class TodoEndpointsV1
     }
 
     // update todo
-    public static async Task<Results<Created<Todo>, NotFound>> UpdateTodo(Todo todo, TodoGroupDbContext database)
+    public static async Task<Results<Created<Api.Tests.WebMinRouteGroup.Data.Todo>, NotFound>> UpdateTodo(Api.Tests.WebMinRouteGroup.Data.Todo todo, TodoGroupDbContext database)
     {
         var existingTodo = await database.Todos.FindAsync(todo.Id);
 

@@ -1,6 +1,6 @@
-using WebMinRouteGroup.Data;
+using Api.Tests.WebMinRouteGroup.Data;
 
-namespace WebMinRouteGroup;
+namespace Api.Tests.WebMinRouteGroup;
 
 public static class Utilities
 {

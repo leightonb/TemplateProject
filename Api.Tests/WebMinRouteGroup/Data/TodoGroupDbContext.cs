@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace WebMinRouteGroup.Data;
+namespace Api.Tests.WebMinRouteGroup.Data;
 
 public class TodoGroupDbContext : DbContext
 {
-    public DbSet<Todo> Todos => Set<Todo>();
+    public DbSet<Api.Tests.WebMinRouteGroup.Data.Todo> Todos => Set<Api.Tests.WebMinRouteGroup.Data.Todo>();
 
     public TodoGroupDbContext(DbContextOptions<TodoGroupDbContext> options)
         : base(options)

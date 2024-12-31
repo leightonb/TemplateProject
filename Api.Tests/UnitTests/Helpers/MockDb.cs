@@ -1,5 +1,5 @@
+using Api.Tests.WebMinRouteGroup.Data;
 using Microsoft.EntityFrameworkCore;
-using WebMinRouteGroup.Data;
 
 namespace UnitTests.Helpers;
 

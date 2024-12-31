@@ -1,4 +1,4 @@
-namespace WebMinRouteGroup.Data;
+namespace Api.Tests.WebMinRouteGroup.Data;
 
 public class Todo
 {

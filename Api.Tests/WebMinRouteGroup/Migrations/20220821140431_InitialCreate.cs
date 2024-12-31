@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace WebMinRouteGroup.Migrations
+namespace Api.Tests.WebMinRouteGroup.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration

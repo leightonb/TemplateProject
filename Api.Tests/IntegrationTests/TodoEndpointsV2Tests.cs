@@ -1,13 +1,14 @@
 using System.Net;
 using System.Net.Http.Json;
+using Api.Tests.IntegrationTests.Helpers;
+using Api.Tests.WebMinRouteGroup.Data;
+using Api.Tests.WebMinRouteGroup.Services;
 using IntegrationTests.Helpers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
-using WebMinRouteGroup.Data;
-using WebMinRouteGroup.Services;
 
-namespace IntegrationTests;
+namespace Api.Tests.IntegrationTests;
 
 [Collection("Sequential")]
 public class TodoEndpointsV2Tests : IClassFixture<TestWebApplicationFactory<Program>>
@@ -71,7 +72,7 @@ public class TodoEndpointsV2Tests : IClassFixture<TestWebApplicationFactory<Prog
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
-        var todos = await client.GetFromJsonAsync<List<Todo>>("/todos/v2");
+        var todos = await client.GetFromJsonAsync<List<Api.Tests.WebMinRouteGroup.Data.Todo>>("/todos/v2");
 
         Assert.NotNull(todos);
         Assert.Single(todos);

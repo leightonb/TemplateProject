@@ -1,7 +1,10 @@
+using Api.Tests.WebMinRouteGroup;
+using Api.Tests.WebMinRouteGroup.Data;
+using Api.Tests.WebMinRouteGroup.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using WebMinRouteGroup;
-using WebMinRouteGroup.Data;
-using WebMinRouteGroup.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 

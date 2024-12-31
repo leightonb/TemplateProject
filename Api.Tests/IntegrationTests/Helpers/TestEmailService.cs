@@ -1,4 +1,4 @@
-using WebMinRouteGroup.Services;
+using Api.Tests.WebMinRouteGroup.Services;
 
 namespace IntegrationTests.Helpers;
 

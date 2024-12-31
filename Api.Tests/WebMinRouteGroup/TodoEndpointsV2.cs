@@ -1,8 +1,11 @@
+using Api.Tests.WebMinRouteGroup.Data;
+using Api.Tests.WebMinRouteGroup.Services;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using WebMinRouteGroup.Data;
-using WebMinRouteGroup.Services;
+using Microsoft.AspNetCore.Routing;
 
-namespace WebMinRouteGroup;
+namespace Api.Tests.WebMinRouteGroup;
 
 public static class TodoEndpointsV2
 {
@@ -34,20 +37,20 @@ public static class TodoEndpointsV2
     }
 
     // get all todos
-    public static async Task<Ok<List<Todo>>> GetAllTodos(ITodoService todoService)
+    public static async Task<Ok<List<Data.Todo>>> GetAllTodos(ITodoService todoService)
     {
         var todos = await todoService.GetAll();
         return TypedResults.Ok(todos);
     }
 
-    public static async Task<Ok<List<Todo>>> GetAllIncompletedTodos(ITodoService todoService)
+    public static async Task<Ok<List<Data.Todo>>> GetAllIncompletedTodos(ITodoService todoService)
     {
         var todos = await todoService.GetIncompleteTodos();
         return TypedResults.Ok(todos);
     }
 
     // get todo by id
-    public static async Task<Results<Ok<Todo>, NotFound>> GetTodo(int id, ITodoService todoService)
+    public static async Task<Results<Ok<Api.Tests.WebMinRouteGroup.Data.Todo>, NotFound>> GetTodo(int id, ITodoService todoService)
     {
         var todo = await todoService.Find(id);
 
@@ -60,9 +63,9 @@ public static class TodoEndpointsV2
     }
 
     // create todo
-    public static async Task<Created<Todo>> CreateTodo(TodoDto todo, ITodoService todoService)
+    public static async Task<Created<Api.Tests.WebMinRouteGroup.Data.Todo>> CreateTodo(TodoDto todo, ITodoService todoService)
     {
-        var newTodo = new Todo
+        var newTodo = new Api.Tests.WebMinRouteGroup.Data.Todo
         {
             Title = todo.Title,
             Description = todo.Description,
@@ -75,7 +78,7 @@ public static class TodoEndpointsV2
     }
 
     // update todo
-    public static async Task<Results<Created<Todo>, NotFound>> UpdateTodo(Todo todo, ITodoService todoService)
+    public static async Task<Results<Created<Data.Todo>, NotFound>> UpdateTodo(Data.Todo todo, ITodoService todoService)
     {
         var existingTodo = await todoService.Find(todo.Id);
 

@@ -3,7 +3,7 @@ import { ref } from 'vue'
 const todos = ref([])
 
 async function login() {
-  const rawResponse = await fetch('http://localho.st:5171/login', {
+  const rawResponse = await fetch('http://localhost:5171/login', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

@@ -16,6 +16,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.11" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="Moq" Version="4.20.72" />
     <PackageReference Include="xunit" Version="2.5.3" />
@@ -28,6 +29,33 @@
 
   <ItemGroup>
     <ProjectReference Include="..\api\TemplateProject.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="UnitTests\bin\**" />
+    <Compile Remove="UnitTests\obj\**" />
+    <Compile Remove="IntegrationTests\bin\**" />
+    <Compile Remove="IntegrationTests\obj\**" />
+    <Compile Remove="WebMinRouteGroup\obj\**" />
+    <Compile Remove="WebMinRouteGroup\bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="UnitTests\bin\**" />
+    <EmbeddedResource Remove="UnitTests\obj\**" />
+    <EmbeddedResource Remove="IntegrationTests\bin\**" />
+    <EmbeddedResource Remove="IntegrationTests\obj\**" />
+    <EmbeddedResource Remove="WebMinRouteGroup\obj\**" />
+    <EmbeddedResource Remove="WebMinRouteGroup\bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="UnitTests\bin\**" />
+    <None Remove="UnitTests\obj\**" />
+    <None Remove="IntegrationTests\bin\**" />
+    <None Remove="IntegrationTests\obj\**" />
+    <None Remove="WebMinRouteGroup\obj\**" />
+    <None Remove="WebMinRouteGroup\bin\**" />
   </ItemGroup>
 
 </Project>

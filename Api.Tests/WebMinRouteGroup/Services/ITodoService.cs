@@ -1,6 +1,5 @@
-using WebMinRouteGroup.Data;
-
-namespace WebMinRouteGroup.Services;
+namespace Api.Tests.WebMinRouteGroup.Services;
+using Todo = Api.Tests.WebMinRouteGroup.Data.Todo;
 
 public interface ITodoService
 {

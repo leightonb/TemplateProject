@@ -1,9 +1,9 @@
+using Api.Tests.WebMinRouteGroup;
+using Api.Tests.WebMinRouteGroup.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
 using UnitTests.Helpers;
-using WebMinRouteGroup;
-using WebMinRouteGroup.Data;
 
-namespace UnitTests;
+namespace Api.Tests.UnitTests;
 
 public class TodoInMemoryTests
 {
@@ -18,7 +18,7 @@ public class TodoInMemoryTests
         var result = await TodoEndpointsV1.GetTodo(1, context);
 
         //Assert
-        Assert.IsType<Results<Ok<Todo>, NotFound>>(result);
+        Assert.IsType<Results<Ok<WebMinRouteGroup.Data.Todo>, NotFound>>(result);
 
         var notFoundResult = (NotFound) result.Result;
 
@@ -33,7 +33,7 @@ public class TodoInMemoryTests
         // Arrange
         await using var context = new MockDb().CreateDbContext();
 
-        context.Todos.Add(new Todo
+        context.Todos.Add(new WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Test title 1",
@@ -41,7 +41,7 @@ public class TodoInMemoryTests
             IsDone = false
         });
 
-        context.Todos.Add(new Todo
+        context.Todos.Add(new WebMinRouteGroup.Data.Todo
         {
             Id = 2,
             Title = "Test title 2",
@@ -55,7 +55,7 @@ public class TodoInMemoryTests
         var result = await TodoEndpointsV1.GetAllTodos(context);
 
         //Assert
-        Assert.IsType<Ok<Todo[]>>(result);
+        Assert.IsType<Ok<WebMinRouteGroup.Data.Todo[]>>(result);
         
         Assert.NotNull(result.Value);
         Assert.NotEmpty(result.Value);
@@ -80,7 +80,7 @@ public class TodoInMemoryTests
         // Arrange
         await using var context = new MockDb().CreateDbContext();
 
-        context.Todos.Add(new Todo
+        context.Todos.Add(new WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Test title",
@@ -94,9 +94,9 @@ public class TodoInMemoryTests
         var result = await TodoEndpointsV1.GetTodo(1, context);
 
         //Assert
-        Assert.IsType<Results<Ok<Todo>, NotFound>>(result);
+        Assert.IsType<Results<Ok<WebMinRouteGroup.Data.Todo>, NotFound>>(result);
 
-        var okResult = (Ok<Todo>)result.Result;
+        var okResult = (Ok<WebMinRouteGroup.Data.Todo>)result.Result;
 
         Assert.NotNull(okResult.Value);
         Assert.Equal(1, okResult.Value.Id);
@@ -121,7 +121,7 @@ public class TodoInMemoryTests
         var result = await TodoEndpointsV1.CreateTodo(newTodo, context);
 
         //Assert
-        Assert.IsType<Created<Todo>>(result);
+        Assert.IsType<Created<WebMinRouteGroup.Data.Todo>>(result);
 
         Assert.NotNull(result);
         Assert.NotNull(result.Location);
@@ -142,7 +142,7 @@ public class TodoInMemoryTests
         //Arrange
         await using var context = new MockDb().CreateDbContext();
 
-        context.Todos.Add(new Todo
+        context.Todos.Add(new WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Exiting test title",
@@ -151,7 +151,7 @@ public class TodoInMemoryTests
 
         await context.SaveChangesAsync();
 
-        var updatedTodo = new Todo
+        var updatedTodo = new WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Updated test title",
@@ -162,9 +162,9 @@ public class TodoInMemoryTests
         var result = await TodoEndpointsV1.UpdateTodo(updatedTodo, context);
 
         //Assert
-        Assert.IsType<Results<Created<Todo>, NotFound>>(result);
+        Assert.IsType<Results<Created<WebMinRouteGroup.Data.Todo>, NotFound>>(result);
 
-        var createdResult = (Created<Todo>)result.Result;
+        var createdResult = (Created<WebMinRouteGroup.Data.Todo>)result.Result;
 
         Assert.NotNull(createdResult);
         Assert.NotNull(createdResult.Location);
@@ -182,7 +182,7 @@ public class TodoInMemoryTests
         //Arrange
         await using var context = new MockDb().CreateDbContext();
 
-        var existingTodo = new Todo
+        var existingTodo = new WebMinRouteGroup.Data.Todo
         {
             Id = 1,
             Title = "Exiting test title",
