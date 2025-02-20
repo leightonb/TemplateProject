@@ -7,8 +7,6 @@ namespace TemplateProject.Services;
 
 public class UserService(IUserRepository userRepository) : IUserService
 {
-    private readonly IUserRepository _userRepository = userRepository;
-
     public async Task<User?> Register(RegisterUser userModel)
     {
         // validate user
@@ -45,14 +43,14 @@ public class UserService(IUserRepository userRepository) : IUserService
             Username = userModel.Username
         };
 
-        user = await _userRepository.Create(user);
+        user = await userRepository.Create(user);
 
         return user;
     }
 
     public async Task<User?> Authenticate(string username, string password)
     {
-        var user = await _userRepository.GetByUsername(username);
+        var user = await userRepository.GetByUsername(username);
 
         if (user == null) return null;
 
@@ -70,22 +68,22 @@ public class UserService(IUserRepository userRepository) : IUserService
 
     public async Task<User?> GetById(int id)
     {
-        return await _userRepository.GetById(id);
+        return await userRepository.GetById(id);
     }
 
     public async Task<User?> GetByEmail(string email)
     {
-        return await _userRepository.GetByEmail(email);
+        return await userRepository.GetByEmail(email);
     }
 
     public async Task<User?> GetByUsername(string username)
     {
-        return await _userRepository.GetByUsername(username);
+        return await userRepository.GetByUsername(username);
     }
 
     public async Task<IEnumerable<User>> GetAll()
     {
-        return await _userRepository.GetAll();
+        return await userRepository.GetAll();
     }
 
     static byte[] EncryptStringToBytes_Aes(string plainText, byte[] Key, byte[] IV)

@@ -26,7 +26,7 @@ async function login() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      username: 'lb12',
+      username: 'lb',
       password: 'lb'
     })
   })
