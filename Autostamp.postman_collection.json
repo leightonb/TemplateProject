@@ -1,0 +1,95 @@
+{
+	"info": {
+		"_postman_id": "1762697f-c2b4-472d-a652-5a5584551ec8",
+		"name": "Autostamp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20338663"
+	},
+	"item": [
+		{
+			"name": "GET manufacturers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6ImxiMTIiLCJyb2xlIjoiIiwibmJmIjoxNzQwMDQ3NzY5LCJleHAiOjE3NDAwNDk1NjksImlhdCI6MTc0MDA0Nzc2OX0.xb3mGeHdJZFLBmxN1hnGY13HfIvrcZTYV19HIsC-BTI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5171/manufacturers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5171",
+					"path": [
+						"manufacturers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"lb12\",\r\n    \"email\": \"leightonb12@live.com\",\r\n    \"password\": \"lb\",\r\n    \"confirmPassword\": \"lb\",\r\n    \"firstName\": \"Leighton\",\r\n    \"lastName\": \"Blyth\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5171/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5171",
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"lb\",\r\n    \"password\": \"lb\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5171/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5171",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
