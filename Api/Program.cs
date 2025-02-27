@@ -49,21 +49,19 @@ builder.Services.AddAuthentication(config =>
     };
 });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("manager", policy => policy.RequireRole("manager"));
-    options.AddPolicy("operator", policy => policy.RequireRole("operator"));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("manager", policy => policy.RequireRole("manager"))
+    .AddPolicy("operator", policy => policy.RequireRole("operator"));
 
 // dotnet user-jwts create --scope "greetings_api" --role "admin"
 // Authorisation-------------------
 
-//CORS-----------------------------
-var specificOrgins = "AppOrigins";
+// CORS-----------------------------
+const string specificOrigins = "AppOrigins";
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: specificOrgins,
+    options.AddPolicy(name: specificOrigins,
                         policy =>
                         {
                             policy.WithOrigins("http://localhost:5173");
@@ -71,13 +69,13 @@ builder.Services.AddCors(options =>
                             policy.WithHeaders(["Content-Type"]);
                         });
 });
-//CORS-----------------------------
+// CORS-----------------------------
 
 var app = builder.Build();
 
-//CORS-----------------------------
-app.UseCors(specificOrgins);
-//CORS-----------------------------
+// CORS-----------------------------
+app.UseCors(specificOrigins);
+// CORS-----------------------------
 
 // Authorisation-------------------
 app.UseAuthentication();
@@ -96,10 +94,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-RouteGroupBuilder manufacturers = app.MapGroup("/manufacturers");
-
-manufacturers.MapGet("/", GetManufacturers).RequireAuthorization();
-
 app.MapGet("/hello", () => "Hello world!")
   .RequireAuthorization("admin_greetings");
 
@@ -116,7 +110,7 @@ app.MapPost("/register", async (RegisterUser userModel, TokenService service) =>
         return Results.NotFound(new { message = "Invalid username or password" });
 
     var token = service.GenerateToken(user);
-    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email, user.UserAccess?.ToList());
+    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email);
 
     return Results.Ok(new { userDto, token });
 });
@@ -133,7 +127,7 @@ app.MapPost("/login", async (LoginUser userModel, TokenService service) =>
         return Results.NotFound(new { message = "Invalid username or password" });
 
     var token = service.GenerateToken(user);
-    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email, user.UserAccess?.ToList());
+    var userDto = new UserDto(user.Id, user.Username, user.FirstName, user.LastName, user.Email);
 
     return Results.Ok(new { userDto, token });
 });
@@ -149,9 +143,3 @@ app.MapGet("/manager", (ClaimsPrincipal user) =>
 }).RequireAuthorization("Manager");
 
 app.Run();
-
-static async Task<IResult> GetManufacturers()
-{
-    //var data = await ManufacturerDal.GetManufacturers();
-    return TypedResults.Ok();
-}

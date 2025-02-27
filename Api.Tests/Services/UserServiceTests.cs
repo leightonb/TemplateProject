@@ -10,9 +10,9 @@ namespace Api.Tests.Services;
 
 public class UserServiceTests
 {
-    private IUserService _userService;
-    private Mock<IUserRepository> _mockUserRepository;
-    private Fixture _fixture;
+    private readonly UserService _userService;
+    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Fixture _fixture;
 
     public UserServiceTests()
     {

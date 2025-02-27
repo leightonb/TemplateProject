@@ -17,7 +17,5 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Mobile { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
-    public EntityStatus Status { get; set; }
-
-    public virtual IEnumerable<UserAccess>? UserAccess { get; set; }
+    public EntityStatus Status { get; set; } = EntityStatus.New;
 }
